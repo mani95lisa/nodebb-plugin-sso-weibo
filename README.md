@@ -1,12 +1,10 @@
-# NodeBB Plugin Tudou
+# NodeBB Plugin SSO Weibo
 
-This NodeBB plugin allows users to embed Tudou videos inline in their posts.
-
-For example : `http://www.tudou.com/programs/view/s8ycVi0QQe4/`
+NodeBB Plugin that allows users to login/register via their Weibo account.
 
 ## Installation
 
-    npm install nodebb-plugin-tudou
+    npm install nodebb-plugin-sso-weibo
 
 
 
