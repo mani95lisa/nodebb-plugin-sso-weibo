@@ -5,7 +5,7 @@
         db = module.parent.require('../src/database'),
         meta = module.parent.require('./meta'),
         passport = module.parent.require('passport'),
-        passportGithub = require('passport-weibo').Strategy,
+        passportWeibo = require('passport-weibo').Strategy,
         fs = module.parent.require('fs'),
         path = module.parent.require('path');
 
@@ -21,7 +21,7 @@
 
     Weibo.getStrategy = function(strategies, callback) {
         if (meta.config['social:weibo:id'] && meta.config['social:weibo:secret']) {
-            passport.use(new WeiboStrategy({
+            passport.use(new passportWeibo({
                 clientID: meta.config['social:weibo:id'],
                 clientSecret: meta.config['social:weibo:secret'],
                 callbackURL: module.parent.require('nconf').get('url') + '/auth/weibo/callback'
