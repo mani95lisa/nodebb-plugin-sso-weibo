@@ -26,6 +26,6 @@
   "readme": "",
   "readmeFilename": "README.md",
   "dependencies": {
-    "passport-weibo": "0.0.1"
+    "passport-weibo": "0.1.0"
   }
 }
