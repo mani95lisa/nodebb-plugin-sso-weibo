@@ -32,6 +32,9 @@
                     email = profile.emails[0].value
                 }
                 var picture = profile.avatarUrl;
+                if(profile._json.avatar_large){
+                    picture = profile._json.avatar_large;
+                }
                 Weibo.login(profile.id, profile.username, email, picture, function(err, user) {
                     if (err) {
                         return done(err);
