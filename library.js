@@ -26,7 +26,13 @@
                 clientSecret: meta.config['social:weibo:secret'],
                 callbackURL: module.parent.require('nconf').get('url') + '/auth/weibo/callback'
             }, function(token, tokenSecret, profile, done) {
-                Weibo.login(profile.id, profile.username, profile.emails[0].value, function(err, user) {
+                console.log(profile);
+                var email = ''
+                if(profile.emails && profile.emails.length){
+                    email = profile.emails[0].value
+                }
+                var picture = profile.avatarUrl;
+                Weibo.login(profile.id, profile.username, email, picture, function(err, user) {
                     if (err) {
                         return done(err);
                     }
@@ -46,7 +52,7 @@
         callback(null, strategies);
     };
 
-    Weibo.login = function(weiboID, username, email, callback) {
+    Weibo.login = function(weiboID, username, email, picture, callback) {
         if (!email) {
             email = username + '@users.noreply.weibo.com';
         }
@@ -73,7 +79,7 @@
 
                 User.getUidByEmail(email, function(err, uid) {
                     if (!uid) {
-                        User.create({username: username, email: email}, function(err, uid) {
+                        User.create({username: username, email: email, picture:picture, uploadedpicture:picture}, function(err, uid) {
                             if (err !== null) {
                                 callback(err);
                             } else {
