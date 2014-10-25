@@ -74,6 +74,9 @@
                 // New User
                 var success = function(uid) {
                     User.setUserField(uid, 'weiboid', weiboID);
+                    User.setUserField(uid, 'picture', picture);
+                    User.setUserField(uid, 'gravatarpicture', picture);
+                    User.setUserField(uid, 'uploadedpicture', picture);
                     db.setObjectField('weiboid:uid', weiboID, uid);
                     callback(null, {
                         uid: uid
