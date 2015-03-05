@@ -1,6 +1,6 @@
 {
   "name": "nodebb-plugin-sso-weibo",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "NodeBB Plugin that allows users to login/register via their Weibo account.",
   "main": "library.js",
   "repository": {
@@ -24,8 +24,11 @@
     "url": "https://github.com/mani95lisa/nodebb-plugin-sso-weibo/issues"
   },
   "readme": "",
+  "readmeFilename": "README.md",
   "dependencies": {
     "passport-weibo": "git://github.com/mani95lisa/passport-weibo.git#master"
   },
-  "readmeFilename": "README.md"
+  "nbbpm": {
+    "compatibility": "^0.6.0"
+  }
 }

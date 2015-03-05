@@ -8,6 +8,7 @@
         passportWeibo = require('passport-weibo').Strategy,
         fs = module.parent.require('fs'),
         path = module.parent.require('path');
+        winston = module.parent.require('winston');
 
     var constants = Object.freeze({
         'name': "Weibo",
@@ -20,10 +21,10 @@
     var Weibo = {};
 
     Weibo.getStrategy = function(strategies, callback) {
-        if (meta.config['social:weibo:id'] && meta.config['social:weibo:secret']) {
+        if (Weibo.hasOwnProperty('id') && Weibo.hasOwnProperty('secret')) {
             passport.use(new passportWeibo({
-                clientID: meta.config['social:weibo:id'],
-                clientSecret: meta.config['social:weibo:secret'],
+                clientID: Weibo.id,
+                clientSecret: Weibo.secret,
                 callbackURL: module.parent.require('nconf').get('url') + '/auth/weibo/callback'
             }, function(token, tokenSecret, profile, done) {
                 console.log(profile);
@@ -47,7 +48,7 @@
                 name: 'weibo',
                 url: '/auth/weibo',
                 callbackURL: '/auth/weibo/callback',
-                icon: 'weibo',
+                icon: 'fa-weibo',
                 scope: 'user:email'
             });
         }
@@ -124,10 +125,21 @@
         res.render('sso/weibo/admin', {});
     }
 
-    Weibo.init = function(app, middleware, controllers) {
-        app.get('/admin/weibo', middleware.admin.buildHeader, renderAdmin);
-        app.get('/api/admin/weibo', renderAdmin);
-    };
+	  GitHub.init = function(data, callback) {
+		    data.router.get('/admin/weibo', data.middleware.admin.buildHeader, renderAdmin);
+    		data.router.get('/api/admin/weibo', renderAdmin);
+
+    		meta.settings.get('sso-weibo', function(err, config) {
+		      	if (config.hasOwnProperty('id') && config.hasOwnProperty('secret')) {
+        				Weibo.id = config.id;
+        				Weibo.secret = config.secret;
+       			} else {
+				        winston.warn('[plugins/sso-weibo] Please complete Weibo SSO setup at: /admin/plugins/sso-weibo');
+      			}
+
+       			callback();
+		    });
+	  };
 
     module.exports = Weibo;
 }(module));
