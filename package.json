@@ -26,7 +26,7 @@
   "readme": "",
   "readmeFilename": "README.md",
   "dependencies": {
-    "passport-weibo": "git://github.com/mani95lisa/passport-weibo.git#master"
+    "passport-weibo": "~0.1.2"
   },
   "nbbpm": {
     "compatibility": "^0.6.0"
