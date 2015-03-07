@@ -7,7 +7,7 @@
         passport = module.parent.require('passport'),
         passportWeibo = require('passport-weibo').Strategy,
         fs = module.parent.require('fs'),
-        path = module.parent.require('path');
+        path = module.parent.require('path'),
         winston = module.parent.require('winston');
 
     var constants = Object.freeze({
