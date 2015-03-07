@@ -27,16 +27,7 @@
                 clientSecret: Weibo.secret,
                 callbackURL: module.parent.require('nconf').get('url') + '/auth/weibo/callback'
             }, function(token, tokenSecret, profile, done) {
-                console.log(profile);
-                var email = ''
-                if(profile.emails && profile.emails.length){
-                    email = profile.emails[0].value
-                }
-                var picture = profile.avatarUrl;
-                if(profile._json.avatar_large){
-                    picture = profile._json.avatar_large;
-                }
-                Weibo.login(profile.id, profile.username, email, picture, function(err, user) {
+                Weibo.login(profile.id, profile.username, profile.emails[0].value, function(err, user) {
                     if (err) {
                         return done(err);
                     }
@@ -56,7 +47,7 @@
         callback(null, strategies);
     };
 
-    Weibo.login = function(weiboID, username, email, picture, callback) {
+    Weibo.login = function(weiboID, username, email, callback) {
         if (!email) {
             email = username + '@users.noreply.weibo.com';
         }
@@ -75,9 +66,6 @@
                 // New User
                 var success = function(uid) {
                     User.setUserField(uid, 'weiboid', weiboID);
-                    User.setUserField(uid, 'picture', picture);
-                    User.setUserField(uid, 'gravatarpicture', picture);
-                    User.setUserField(uid, 'uploadedpicture', picture);
                     db.setObjectField('weiboid:uid', weiboID, uid);
                     callback(null, {
                         uid: uid
@@ -86,7 +74,7 @@
 
                 User.getUidByEmail(email, function(err, uid) {
                     if (!uid) {
-                        User.create({username: username, email: email, picture:picture, uploadedpicture:picture}, function(err, uid) {
+                        User.create({username: username, email: email}, function(err, uid) {
                             if (err !== null) {
                                 callback(err);
                             } else {
