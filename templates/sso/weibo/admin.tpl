@@ -1,7 +1,7 @@
 <div class="row">
 	<div class="col-lg-9">
 		<div class="panel panel-default">
-			<div class="panel-heading"><i class="fa fa-github"></i> GitHub Social Authentication</div>
+			<div class="panel-heading"><i class="fa fa-weibo"></i> Weibo Social Authentication</div>
 			<div class="panel-body">
 				<p>
 					Register a new <strong>Weibo Application</strong> via 
@@ -24,7 +24,7 @@
 	</div>
 	<div class="col-lg-3">
 		<div class="panel panel-default">
-			<div class="panel-heading">GitHub Control Panel</div>
+			<div class="panel-heading">Weibo Control Panel</div>
 			<div class="panel-body">
 				<button class="btn btn-primary" id="save">Save Settings</button>
 			</div>

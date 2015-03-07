@@ -113,7 +113,7 @@
         res.render('sso/weibo/admin', {});
     }
 
-	  GitHub.init = function(data, callback) {
+	  Weibo.init = function(data, callback) {
 		    data.router.get('/admin/weibo', data.middleware.admin.buildHeader, renderAdmin);
     		data.router.get('/api/admin/weibo', renderAdmin);
 
