@@ -1,133 +1,121 @@
 (function(module) {
-    "use strict";
+  "use strict";
 
-    var User = module.parent.require('./user'),
-        db = module.parent.require('../src/database'),
-        meta = module.parent.require('./meta'),
-        passport = module.parent.require('passport'),
-        passportWeibo = require('passport-weibo').Strategy,
-        fs = module.parent.require('fs'),
-        path = module.parent.require('path'),
-        winston = module.parent.require('winston');
+  var user = module.parent.require('./user'),
+      db = module.parent.require('../src/database'),
+      meta = module.parent.require('./meta'),
+      passport = module.parent.require('passport'),
+      passportWeibo = require('passport-weibo').Strategy,
+      nconf = module.parent.require('nconf'),
+      winston = module.parent.require('winston');
 
-    var constants = Object.freeze({
-        'name': "Weibo",
-        'admin': {
-            'icon': 'fa-weibo',
-            'route': '/weibo'
-        }
-    });
+  var constants = Object.freeze({
+    'name': "Weibo",
+    'admin': {
+      'icon': 'fa-weibo',
+      'route': '/plugins/sso-weibo'
+    }
+  });
 
-    var Weibo = {};
+  var Weibo = {};
 
-    Weibo.getStrategy = function(strategies, callback) {
-        if (Weibo.hasOwnProperty('id') && Weibo.hasOwnProperty('secret')) {
-            passport.use(new passportWeibo({
-                clientID: Weibo.id,
-                clientSecret: Weibo.secret,
-                callbackURL: module.parent.require('nconf').get('url') + '/auth/weibo/callback'
-            }, function(token, tokenSecret, profile, done) {
-                Weibo.login(profile.id, profile.username, profile.emails[0].value, function(err, user) {
-                    if (err) {
-                        return done(err);
-                    }
-                    done(null, user);
-                });
-            }));
-
-            strategies.push({
-                name: 'weibo',
-                url: '/auth/weibo',
-                callbackURL: '/auth/weibo/callback',
-                icon: 'fa-weibo',
-                scope: 'user:email'
-            });
-        }
-        
-        callback(null, strategies);
-    };
-
-    Weibo.login = function(weiboID, username, email, callback) {
-        if (!email) {
-            email = username + '@users.noreply.weibo.com';
-        }
-        
-        Weibo.getUidByWeiboID(weiboID, function(err, uid) {
-            if (err) {
-                return callback(err);
-            }
-
-            if (uid) {
-                // Existing User
-                callback(null, {
-                    uid: uid
-                });
-            } else {
-                // New User
-                var success = function(uid) {
-                    User.setUserField(uid, 'weiboid', weiboID);
-                    db.setObjectField('weiboid:uid', weiboID, uid);
-                    callback(null, {
-                        uid: uid
-                    });
-                };
-
-                User.getUidByEmail(email, function(err, uid) {
-                    if (!uid) {
-                        User.create({username: username, email: email}, function(err, uid) {
-                            if (err !== null) {
-                                callback(err);
-                            } else {
-                                success(uid);
-                            }
-                        });
-                    } else {
-                        success(uid); // Existing account -- merge
-                    }
-                });
-            }
-        });
-    };
-
-    Weibo.getUidByWeiboID = function(weiboID, callback) {
-        db.getObjectField('weiboid:uid', weiboID, function(err, uid) {
-            if (err) {
-                callback(err);
-            } else {
-                callback(null, uid);
-            }
-        });
-    };
-
-    Weibo.addMenuItem = function(custom_header, callback) {
-        custom_header.authentication.push({
-            "route": constants.admin.route,
-            "icon": constants.admin.icon,
-            "name": constants.name
-        });
-
-        callback(null, custom_header);
-    };
-
-    function renderAdmin(req, res, callback) {
-        res.render('sso/weibo/admin', {});
+  Weibo.init = function(params, callback) {
+    function render(req, res) {
+      res.render('admin/plugins/sso-weibo', {});
     }
 
-	  Weibo.init = function(data, callback) {
-		    data.router.get('/admin/weibo', data.middleware.admin.buildHeader, renderAdmin);
-    		data.router.get('/api/admin/weibo', renderAdmin);
+    params.router.get('/admin/plugins/sso-weibo', params.middleware.admin.buildHeader, render);
+    params.router.get('/api/admin/plugins/sso-weibo', render);
 
-    		meta.settings.get('sso-weibo', function(err, config) {
-		      	if (config.hasOwnProperty('id') && config.hasOwnProperty('secret')) {
-        				Weibo.id = config.id;
-        				Weibo.secret = config.secret;
-       			} else {
-				        winston.warn('[plugins/sso-weibo] Please complete Weibo SSO setup at: /admin/plugins/sso-weibo');
-      			}
+    callback();
+  };
 
-       			callback();
-		    });
-	  };
+  Weibo.getStrategy = function(strategies, callback) {
+    if (meta.config['social:weibo:app_id'] && meta.config['social:weibo:secret']) {
+      passport.use(new passportWeibo(
+        {
+          clientID: meta.config['social:weibo:app_id'],
+          clientSecret: meta.config['social:weibo:secret'],
+          callbackURL: nconf.get('url') + '/auth/weibo/callback'
+        },
 
-    module.exports = Weibo;
+        function(accessToken, refreshtoken, profile, done) {
+          var avatar = profile._json_avatar_large;
+          Weibo.login(profile.id, profile.displayName, avatar, function(err, user) {
+            if (err) {
+              return done(err);
+            }
+            done(null, user);
+          });
+        }
+      ));
+
+      strategies.push({
+        name: 'weibo',
+        url: '/auth/weibo',
+        callbackURL: '/auth/weibo/callback',
+        icon: constants.admin.icon,
+        scope: ''
+      });
+    }
+        
+    callback(null, strategies);
+  };
+
+  Weibo.login = function(weiboid, displayName, avatar, callback) {
+    Weibo.getUidByWeiboId(weiboid, function(err, uid) {
+      if (err) {
+        return callback(err);
+      }
+
+      if (uid !== null) {
+        // Existing User
+        callback(null, {
+          uid: uid
+        });
+      } else {
+        // New User
+        user.create({username: displayName}, function(err, uid) {
+          if (err) {
+            return callback(err);
+          }
+
+          // Save weibo-specific information to the user
+          user.setUserField(uid, 'weiboid', weiboid);
+          db.setObjectField('weiboid', weiboid, uid);
+
+          // Save their avatar, if present
+          if (avatar) {
+            user.setUserField(uid, 'uploadedpicture', avatar);
+            user.setUserField(uid, 'picture', avatar);
+          }
+
+          callback(null, {
+            uid: uid
+          });
+        });
+      }
+    });
+  };
+
+  Weibo.getUidByWeiboId = function(weiboid, callback) {
+    db.getObjectField('weiboid:uid', weiboid, function(err, uid) {
+      if (err) {
+        return callback(err);
+      }
+      callback(null, uid);
+    });
+  };
+
+  Weibo.addMenuItem = function(custom_header, callback) {
+    custom_header.authentication.push({
+      "route": constants.admin.route,
+      "icon": constants.admin.icon,
+      "name": constants.name
+    });
+
+    callback(null, custom_header);
+  };
+
+  module.exports = Weibo;
 }(module));
