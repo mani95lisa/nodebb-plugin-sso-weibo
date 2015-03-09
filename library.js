@@ -83,7 +83,7 @@
 
           // Save weibo-specific information to the user
           user.setUserField(uid, 'weiboid', weiboid);
-          db.setObjectField('weiboid', weiboid, uid);
+          db.setObjectField('weiboid:uid', weiboid, uid);
 
           // Save their avatar, if present
           if (avatar) {
