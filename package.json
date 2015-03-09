@@ -1,6 +1,6 @@
 {
   "name": "nodebb-plugin-sso-weibo",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "description": "NodeBB Plugin that allows users to login/register via their Weibo account.",
   "main": "library.js",
   "repository": {
