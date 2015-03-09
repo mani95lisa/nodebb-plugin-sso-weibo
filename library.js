@@ -7,6 +7,7 @@
       passport = module.parent.require('passport'),
       passportWeibo = require('passport-weibo').Strategy,
       nconf = module.parent.require('nconf'),
+      async = module.parent.require('async'),
       winston = module.parent.require('winston');
 
   var constants = Object.freeze({
@@ -40,7 +41,7 @@
         },
 
         function(accessToken, refreshtoken, profile, done) {
-          var avatar = profile._json_avatar_large;
+          var avatar = profile._json.avatar_large;
           Weibo.login(profile.id, profile.displayName, avatar, function(err, user) {
             if (err) {
               return done(err);
@@ -115,6 +116,24 @@
     });
 
     callback(null, custom_header);
+  };
+  
+  Weibo.deleteUserData = function(uid, callback) {
+    async.waterfall([
+        async.apply(user.getUserField, uid, 'weiboid'),
+        function (oAuthIdToDelete, next) {
+          db.deleteObjectField('weiboid:uid', oAuthIdToDelete, next);
+        }
+      ],
+      function (err) {
+        if (err) {
+          winston.error('[sso-weibo] Could not remove OAuthId data for uid '
+            + '.Error: ' + err);
+          return callback(err);
+        }
+        callback(null, uid);
+      }
+    );
   };
 
   module.exports = Weibo;
