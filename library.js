@@ -1,140 +1,124 @@
 (function(module) {
-  "use strict";
+	"use strict";
 
-  var user = module.parent.require('./user'),
-      db = module.parent.require('../src/database'),
-      meta = module.parent.require('./meta'),
-      passport = module.parent.require('passport'),
-      passportWeibo = require('passport-weibo').Strategy,
-      nconf = module.parent.require('nconf'),
-      async = module.parent.require('async'),
-      winston = module.parent.require('winston');
+	var User = module.parent.require('./user'),
+		db = module.parent.require('./database'),
+		meta = module.parent.require('./meta'),
+		nconf = module.parent.require('nconf'),
+		passport = module.parent.require('passport'),
+		GithubStrategy = require('passport-github').Strategy;
 
-  var constants = Object.freeze({
-    'name': "Weibo",
-    'admin': {
-      'icon': 'fa-weibo',
-      'route': '/plugins/sso-weibo'
-    }
-  });
+	var constants = Object.freeze({
+		'name': "GitHub",
+		'admin': {
+			'icon': 'fa-github',
+			'route': '/plugins/sso-github'
+		}
+	});
 
-  var Weibo = {};
+	var GitHub = {};
 
-  Weibo.init = function(params, callback) {
-    function render(req, res) {
-      res.render('admin/plugins/sso-weibo', {});
-    }
+	GitHub.getStrategy = function(strategies, callback) {
+		meta.settings.get('sso-github', function(err, settings) {
+			if (!err && settings.id && settings.secret) {
+				passport.use(new GithubStrategy({
+					clientID: settings.id,
+					clientSecret: settings.secret,
+					callbackURL: nconf.get('url') + '/auth/github/callback'
+				}, function(token, tokenSecret, profile, done) {
+					GitHub.login(profile.id, profile.username, profile.emails[0].value, function(err, user) {
+						if (err) {
+							return done(err);
+						}
+						done(null, user);
+					});
+				}));
 
-    params.router.get('/admin/plugins/sso-weibo', params.middleware.admin.buildHeader, render);
-    params.router.get('/api/admin/plugins/sso-weibo', render);
+				strategies.push({
+					name: 'github',
+					url: '/auth/github',
+					callbackURL: '/auth/github/callback',
+					icon: 'fa-github',
+					scope: 'user:email'
+				});
+			}
 
-    callback();
-  };
+			callback(null, strategies);
+		});
+	};
 
-  Weibo.getStrategy = function(strategies, callback) {
-    if (meta.config['social:weibo:app_id'] && meta.config['social:weibo:secret']) {
-      passport.use(new passportWeibo(
-        {
-          clientID: meta.config['social:weibo:app_id'],
-          clientSecret: meta.config['social:weibo:secret'],
-          callbackURL: nconf.get('url') + '/auth/weibo/callback'
-        },
+	GitHub.login = function(githubID, username, email, callback) {
+		if (!email) {
+			email = username + '@users.noreply.github.com';
+		}
 
-        function(accessToken, refreshtoken, profile, done) {
-          var avatar = profile._json.avatar_large;
-          Weibo.login(profile.id, profile.displayName, avatar, function(err, user) {
-            if (err) {
-              return done(err);
-            }
-            done(null, user);
-          });
-        }
-      ));
+		GitHub.getUidByGitHubID(githubID, function(err, uid) {
+			if (err) {
+				return callback(err);
+			}
 
-      strategies.push({
-        name: 'weibo',
-        url: '/auth/weibo',
-        callbackURL: '/auth/weibo/callback',
-        icon: constants.admin.icon,
-        scope: ''
-      });
-    }
-        
-    callback(null, strategies);
-  };
+			if (uid) {
+				// Existing User
+				callback(null, {
+					uid: uid
+				});
+			} else {
+				// New User
+				var success = function(uid) {
+					User.setUserField(uid, 'githubid', githubID);
+					db.setObjectField('githubid:uid', githubID, uid);
+					callback(null, {
+						uid: uid
+					});
+				};
 
-  Weibo.login = function(weiboid, displayName, avatar, callback) {
-    Weibo.getUidByWeiboId(weiboid, function(err, uid) {
-      if (err) {
-        return callback(err);
-      }
+				User.getUidByEmail(email, function(err, uid) {
+					if (!uid) {
+						User.create({username: username, email: email}, function(err, uid) {
+							if (err !== null) {
+								callback(err);
+							} else {
+								success(uid);
+							}
+						});
+					} else {
+						success(uid); // Existing account -- merge
+					}
+				});
+			}
+		});
+	};
 
-      if (uid !== null) {
-        // Existing User
-        callback(null, {
-          uid: uid
-        });
-      } else {
-        // New User
-        user.create({username: displayName}, function(err, uid) {
-          if (err) {
-            return callback(err);
-          }
+	GitHub.getUidByGitHubID = function(githubID, callback) {
+		db.getObjectField('githubid:uid', githubID, function(err, uid) {
+			if (err) {
+				callback(err);
+			} else {
+				callback(null, uid);
+			}
+		});
+	};
 
-          // Save weibo-specific information to the user
-          user.setUserField(uid, 'weiboid', weiboid);
-          db.setObjectField('weiboid:uid', weiboid, uid);
+	GitHub.addMenuItem = function(custom_header, callback) {
+		custom_header.authentication.push({
+			"route": constants.admin.route,
+			"icon": constants.admin.icon,
+			"name": constants.name
+		});
 
-          // Save their avatar, if present
-          if (avatar) {
-            user.setUserField(uid, 'uploadedpicture', avatar);
-            user.setUserField(uid, 'picture', avatar);
-          }
+		callback(null, custom_header);
+	};
 
-          callback(null, {
-            uid: uid
-          });
-        });
-      }
-    });
-  };
+	GitHub.init = function(data, callback) {
+		function renderAdmin(req, res) {
+			res.render('admin/plugins/sso-github', {});
+		}
 
-  Weibo.getUidByWeiboId = function(weiboid, callback) {
-    db.getObjectField('weiboid:uid', weiboid, function(err, uid) {
-      if (err) {
-        return callback(err);
-      }
-      callback(null, uid);
-    });
-  };
+		data.router.get('/admin/plugins/sso-github', data.middleware.admin.buildHeader, renderAdmin);
+		data.router.get('/api/admin/plugins/sso-github', renderAdmin);
 
-  Weibo.addMenuItem = function(custom_header, callback) {
-    custom_header.authentication.push({
-      "route": constants.admin.route,
-      "icon": constants.admin.icon,
-      "name": constants.name
-    });
+		callback();
+	};
 
-    callback(null, custom_header);
-  };
-  
-  Weibo.deleteUserData = function(uid, callback) {
-    async.waterfall([
-        async.apply(user.getUserField, uid, 'weiboid'),
-        function (oAuthIdToDelete, next) {
-          db.deleteObjectField('weiboid:uid', oAuthIdToDelete, next);
-        }
-      ],
-      function (err) {
-        if (err) {
-          winston.error('[sso-weibo] Could not remove OAuthId data for uid '
-            + '.Error: ' + err);
-          return callback(err);
-        }
-        callback(null, uid);
-      }
-    );
-  };
-
-  module.exports = Weibo;
+	module.exports = GitHub;
 }(module));

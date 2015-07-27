@@ -1,34 +1,71 @@
 {
-  "name": "nodebb-plugin-sso-weibo",
-  "version": "0.1.0",
-  "description": "NodeBB Plugin that allows users to login/register via their Weibo account.",
+  "name": "nodebb-plugin-sso-github",
+  "version": "0.4.1",
+  "description": "NodeBB GitHub SSO",
   "main": "library.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mani95lisa/nodebb-plugin-sso-weibo"
+    "url": "https://github.com/psychobunny/nodebb-plugin-sso-github"
   },
   "keywords": [
     "nodebb",
     "plugin",
-    "weibo",
+    "github",
     "sso",
     "single sign on",
     "registration"
   ],
   "author": {
-    "name": "mani95lisa",
-    "email": "mani95lisa@gmail.com"
+    "name": "psychobunny",
+    "email": "psycho.bunny@hotmail.com"
   },
+  "contributors": [
+    {
+      "name": "Julian Lam",
+      "email": "julian@nodebb.org",
+      "url": "https://github.com/julianlam/nodebb-plugin-sso-github"
+    },
+    {
+      "name": "Eric Miao",
+      "email": "qjmiao@gmail.com",
+      "url": "https://github.com/qjmiao/nodebb-plugin-sso-github"
+    }
+  ],
   "license": "BSD-2-Clause",
   "bugs": {
-    "url": "https://github.com/mani95lisa/nodebb-plugin-sso-weibo/issues"
+    "url": "https://github.com/psychobunny/nodebb-plugin-sso-github/issues"
   },
-  "readme": "",
-  "readmeFilename": "README.md",
   "dependencies": {
-    "passport-weibo": "~0.1.2"
+    "passport-github": "~0.1.5"
   },
   "nbbpm": {
     "compatibility": "^0.6.0"
-  }
+  },
+  "gitHead": "52b13ad607cb27aa931b25bca0530aafce4c6188",
+  "homepage": "https://github.com/psychobunny/nodebb-plugin-sso-github",
+  "_id": "nodebb-plugin-sso-github@0.4.1",
+  "scripts": {},
+  "_shasum": "3260527420b8668840bfeb789251e1242772261b",
+  "_from": "nodebb-plugin-sso-github@latest",
+  "_npmVersion": "2.0.0",
+  "_npmUser": {
+    "name": "julianlam",
+    "email": "julian@designcreateplay.com"
+  },
+  "maintainers": [
+    {
+      "name": "psychobunny",
+      "email": "psycho.bunny@hotmail.com"
+    },
+    {
+      "name": "julianlam",
+      "email": "julian@designcreateplay.com"
+    }
+  ],
+  "dist": {
+    "shasum": "3260527420b8668840bfeb789251e1242772261b",
+    "tarball": "http://registry.npmjs.org/nodebb-plugin-sso-github/-/nodebb-plugin-sso-github-0.4.1.tgz"
+  },
+  "directories": {},
+  "_resolved": "https://registry.npmjs.org/nodebb-plugin-sso-github/-/nodebb-plugin-sso-github-0.4.1.tgz"
 }
