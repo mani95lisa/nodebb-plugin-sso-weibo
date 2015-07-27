@@ -1,71 +1,55 @@
 {
-  "name": "nodebb-plugin-sso-github",
-  "version": "0.4.1",
-  "description": "NodeBB GitHub SSO",
+  "name": "nodebb-plugin-sso-weibo",
+  "version": "0.0.9",
+  "description": "NodeBB Plugin that allows users to login/register via their Weibo account.",
   "main": "library.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/psychobunny/nodebb-plugin-sso-github"
+    "url": "https://github.com/mani95lisa/nodebb-plugin-sso-weibo"
   },
   "keywords": [
     "nodebb",
     "plugin",
-    "github",
+    "weibo",
     "sso",
     "single sign on",
     "registration"
   ],
   "author": {
-    "name": "psychobunny",
-    "email": "psycho.bunny@hotmail.com"
+    "name": "mani95lisa",
+    "email": "mani95lisa@gmail.com"
   },
-  "contributors": [
-    {
-      "name": "Julian Lam",
-      "email": "julian@nodebb.org",
-      "url": "https://github.com/julianlam/nodebb-plugin-sso-github"
-    },
-    {
-      "name": "Eric Miao",
-      "email": "qjmiao@gmail.com",
-      "url": "https://github.com/qjmiao/nodebb-plugin-sso-github"
-    }
-  ],
   "license": "BSD-2-Clause",
   "bugs": {
-    "url": "https://github.com/psychobunny/nodebb-plugin-sso-github/issues"
+    "url": "https://github.com/mani95lisa/nodebb-plugin-sso-weibo/issues"
   },
   "dependencies": {
-    "passport-github": "~0.1.5"
+    "passport-weibo": "git://github.com/mani95lisa/passport-weibo.git#master"
   },
   "nbbpm": {
-    "compatibility": "^0.6.0"
+    "compatibility": "^0.7.1"
   },
-  "gitHead": "52b13ad607cb27aa931b25bca0530aafce4c6188",
-  "homepage": "https://github.com/psychobunny/nodebb-plugin-sso-github",
-  "_id": "nodebb-plugin-sso-github@0.4.1",
+  "gitHead": "f7fa53a6917d56059e8631d8ab82d0b25af0dc80",
+  "homepage": "https://github.com/mani95lisa/nodebb-plugin-sso-weibo",
+  "_id": "nodebb-plugin-sso-weibo@0.0.8",
   "scripts": {},
-  "_shasum": "3260527420b8668840bfeb789251e1242772261b",
-  "_from": "nodebb-plugin-sso-github@latest",
-  "_npmVersion": "2.0.0",
+  "_shasum": "073e0282e0619b05ba99c5d3cd561538eb7aa3fe",
+  "_from": "nodebb-plugin-sso-weibo@latest",
+  "_npmVersion": "1.4.16",
   "_npmUser": {
-    "name": "julianlam",
-    "email": "julian@designcreateplay.com"
+    "name": "mani",
+    "email": "mani95lisa@gmail.com"
   },
   "maintainers": [
     {
-      "name": "psychobunny",
-      "email": "psycho.bunny@hotmail.com"
-    },
-    {
-      "name": "julianlam",
-      "email": "julian@designcreateplay.com"
+      "name": "mani",
+      "email": "mani95lisa@gmail.com"
     }
   ],
   "dist": {
-    "shasum": "3260527420b8668840bfeb789251e1242772261b",
-    "tarball": "http://registry.npmjs.org/nodebb-plugin-sso-github/-/nodebb-plugin-sso-github-0.4.1.tgz"
+    "shasum": "073e0282e0619b05ba99c5d3cd561538eb7aa3fe",
+    "tarball": "http://registry.npmjs.org/nodebb-plugin-sso-weibo/-/nodebb-plugin-sso-weibo-0.0.8.tgz"
   },
   "directories": {},
-  "_resolved": "https://registry.npmjs.org/nodebb-plugin-sso-github/-/nodebb-plugin-sso-github-0.4.1.tgz"
+  "_resolved": "https://registry.npmjs.org/nodebb-plugin-sso-weibo/-/nodebb-plugin-sso-weibo-0.0.8.tgz"
 }

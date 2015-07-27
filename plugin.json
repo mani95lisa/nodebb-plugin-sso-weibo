@@ -1,19 +1,20 @@
 {
-	"id": "nodebb-plugin-sso-github",
-	"name": "NodeBB GitHub SSO",
-	"description": "NodeBB Plugin that allows users to login/register via their GitHub account.",
-	"url": "https://github.com/psychobunny/nodebb-plugin-sso-github",
-	"library": "./library.js",
-	"hooks": [
-		{
-			"hook": "filter:auth.init", "method": "getStrategy"
-		},
-		{
-			"hook": "filter:admin.header.build", "method": "addMenuItem"
-		},
-		{
-			"hook": "static:app.load", "method": "init"
-		}
-	],
-	"templates": "./templates"
+    "id": "nodebb-plugin-sso-weibo",
+    "name": "NodeBB Weibo SSO",
+    "description": "NodeBB Plugin that allows users to login/register via their Weibo account.",
+    "url": "https://github.com/mani95lisa/nodebb-plugin-sso-weibo",
+    "library": "./library.js",
+    "hooks": [
+        {
+            "hook": "filter:auth.init", "method": "getStrategy"
+        },
+        {
+            "hook": "filter:admin.header.build", "method": "addMenuItem"
+        },
+        {
+            "hook": "static:app.load", "method": "init"
+        }
+    ],
+    "templates": "./templates"
+
 }

@@ -1,22 +1,22 @@
 <div class="row">
 	<div class="col-lg-9">
 		<div class="panel panel-default">
-			<div class="panel-heading"><i class="fa fa-github"></i> GitHub Social Authentication</div>
+			<div class="panel-heading"><i class="fa fa-weibo"></i> Weibo Social Authentication</div>
 			<div class="panel-body">
 				<p>
-					Register a new <strong>GitHub Application</strong> via 
-					<a href="https://github.com/settings/applications">Developer Applications</a> and then paste
-					your application details here. Your callback URL is yourdomain.com/auth/github/callback
+					Register a new <strong>Weibo Application</strong> via
+					<a href="http://open.weibo.com/">Open Weibo</a> and then paste
+					your application details here. Your callback URL is yourdomain.com/auth/weibo/callback
 				</p>
 				<br />
-				<form class="sso-github">
+				<form class="sso-weibo">
 					<div class="form-group">
 						<label for="id">Client ID</label>
-						<input type="text" name="id" title="Client ID" class="form-control" placeholder="Client ID"><br />
+						<input type="text" name="id" title="App Key" class="form-control" placeholder="App key"><br />
 					</div>
 					<div class="form-group">
 						<label for="secret">Client Secret</label>
-						<input type="text" name="secret" title="Client Secret" class="form-control" placeholder="Client Secret">
+						<input type="text" name="secret" title="App Secret" class="form-control" placeholder="App Secret">
 					</div>
 				</form>
 			</div>
@@ -24,7 +24,7 @@
 	</div>
 	<div class="col-lg-3">
 		<div class="panel panel-default">
-			<div class="panel-heading">GitHub Control Panel</div>
+			<div class="panel-heading">Weibo Control Panel</div>
 			<div class="panel-body">
 				<button class="btn btn-primary" id="save">Save Settings</button>
 			</div>
@@ -34,13 +34,13 @@
 
 <script>
 	require(['settings'], function(Settings) {
-		Settings.load('sso-github', $('.sso-github'));
+		Settings.load('sso-weibo', $('.sso-weibo'));
 
 		$('#save').on('click', function() {
-			Settings.save('sso-github', $('.sso-github'), function() {
+			Settings.save('sso-weibo', $('.sso-weibo'), function() {
 				app.alert({
 					type: 'success',
-					alert_id: 'github-saved',
+					alert_id: 'weibo-saved',
 					title: 'Settings Saved',
 					message: 'Please reload your NodeBB to apply these settings',
 					clickfn: function() {
